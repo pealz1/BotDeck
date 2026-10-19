@@ -4,6 +4,7 @@ const path = require('node:path');
 const { once } = require('node:events');
 const root = path.resolve(__dirname, '../..');
 const output = path.join(root, 'plans', '261001-settings');
+fs.mkdirSync(output, { recursive: true });
 
 {
     const { app, BrowserWindow, session } = require('electron');
