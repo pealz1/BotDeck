@@ -421,6 +421,14 @@ export class DiscordBotClient extends EventEmitter {
             // From #368: hand external web links to the OS browser instead of dropping them.
             if (/^https?:\/\//i.test(url)) void shell.openExternal(url);
         });
+        // #380: the default menu binds zoom-in to Ctrl+Shift+=; accept Ctrl+= and Ctrl+Numpad+ like Discord.
+        contents.on("before-input-event", (event, input) => {
+            if (input.type !== "keyDown" || !(input.control || input.meta) || input.alt) return;
+            if ((input.key === "=" && !input.shift) || input.code === "NumpadAdd") {
+                event.preventDefault();
+                contents.setZoomLevel(contents.getZoomLevel() + 0.5);
+            }
+        });
         // Discord popout
         this.discordWebContents.setWindowOpenHandler(({ url }) => {
             this.logger.log("WindowOpenHandler", url);
