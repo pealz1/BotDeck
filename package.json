@@ -174,7 +174,7 @@
     "publish": [
       {
         "provider": "github",
-        "owner": "aiko-chan-ai",
+        "owner": "pealz1",
         "repo": "DiscordBotClient"
       }
     ],
