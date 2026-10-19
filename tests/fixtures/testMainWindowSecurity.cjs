@@ -4,7 +4,9 @@ const path = require('node:path');
 const root = path.resolve(__dirname, '../..');
 
 {
-    const { app, BrowserWindow } = require('electron');
+    const { app, BrowserWindow, shell } = require('electron');
+    const opened = [];
+    shell.openExternal = async url => { opened.push(url); };
     const profile = process.env.DBC_SECURITY_TEST_PROFILE;
     assert.ok(profile && path.basename(profile).startsWith('dbc-security-test-'));
     app.setPath('userData', profile);
@@ -65,9 +67,19 @@ const root = path.resolve(__dirname, '../..');
         assert.equal(await attacker.webContents.executeJavaScript('window.BotClientNative.getBotClientName()'), null);
         assert.equal(await attacker.webContents.executeJavaScript('window.BotClientNative.getUserExperiments([], "123")'), null);
         assert.equal(await attacker.webContents.executeJavaScript('window.BotClientNative.requestOpenMessageEditorWindow().then(() => false, () => true)'), true);
+        const press = input => contents.emit('before-input-event', { preventDefault () {} }, { type: 'keyDown', control: true, shift: false, alt: false, meta: false, ...input });
+        const zoom = contents.getZoomLevel();
+        press({ key: '=', code: 'Equal' });
+        assert.equal(contents.getZoomLevel(), zoom + 0.5, 'Ctrl+= zooms in');
+        press({ key: '+', code: 'NumpadAdd' });
+        assert.equal(contents.getZoomLevel(), zoom + 1, 'Ctrl+Numpad+ zooms in');
+        press({ key: '+', code: 'Equal', shift: true });
+        assert.equal(contents.getZoomLevel(), zoom + 1, 'Ctrl+Shift+= is left to the default menu');
+        contents.setZoomLevel(zoom);
         await contents.executeJavaScript('location.href = "https://example.invalid/"');
         await new Promise(resolve => setTimeout(resolve, 200));
         assert.equal(new URL(contents.getURL()).origin, 'https://discord.com');
+        assert.deepEqual(opened, ['https://example.invalid/'], 'Blocked web navigation opens externally');
         finish();
     })().catch(finish);
 }
