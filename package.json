@@ -110,7 +110,8 @@
       "build",
       "VencordExtension",
       "!tsconfig.renderer.json",
-      "!plans"
+      "!plans",
+      "!plugin"
     ],
     "appId": "DiscordBotClient",
     "productName": "DiscordBotClient",

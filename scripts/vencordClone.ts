@@ -8,7 +8,6 @@ import versions from "./build-dependencies.json";
 
 const root = process.cwd();
 const vencordDir = path.join(root, "Vencord");
-const pluginDir = path.join(vencordDir, "src", "userplugins", "botClient");
 
 function run (command: string, args: string[], cwd = root) {
     execFileSync(command, args, { cwd, stdio: "inherit" });
@@ -29,5 +28,4 @@ function prepareCheckout (directory: string, repository: string, revision: strin
 }
 
 prepareCheckout(vencordDir, "https://github.com/Vendicated/Vencord.git", versions.vencord);
-prepareCheckout(pluginDir, "https://github.com/aiko-chan-ai/VencordDBCPlugin.git", versions.botClientPlugin);
 run(process.execPath, [path.join(root, "node_modules", "pnpm", "bin", "pnpm.cjs"), "install", "--frozen-lockfile"], vencordDir);

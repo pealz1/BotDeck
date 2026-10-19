@@ -134,7 +134,7 @@ npm run build
 
 This will create an executable called `DiscordBotClient` or `DiscordBotClient.exe` in the `dist` folder, depending on whether you are using Windows or not.
 
-`requirement` installs the root lockfile, checks out the pinned Vencord, BotClient plugin, and Discohook revisions from `scripts/build-dependencies.json`. Existing checkouts are never reset; a mismatched revision stops with an error so local work is not lost. `build` packages locally without publishing. Maintainers should use the [release process](docs/release-process.md) for tags and artifacts. After building, run `npm run typecheck` for TypeScript and `npm test` on Windows for the Electron integration suite. Use `npm start` to launch the app.
+`requirement` installs the root lockfile, checks out the pinned Vencord and Discohook revisions from `scripts/build-dependencies.json`. The BotClient Vencord plugin lives in `plugin/` and is copied into Vencord on every `npm run vencord`. Existing checkouts are never reset; a mismatched revision stops with an error so local work is not lost. `build` packages locally without publishing. Maintainers should use the [release process](docs/release-process.md) for tags and artifacts. After building, run `npm run typecheck` for TypeScript and `npm test` on Windows for the Electron integration suite. Use `npm start` to launch the app.
 
 ---
 
@@ -263,7 +263,7 @@ Hit me up if you have a similar project, and I'll gladly add it to the list.
 ## How to update to the latest Discord version ?
 
 > [!TIP]
-> This updates the web snapshot. Vencord, the BotClient plugin, and Discohook are pinned separately so a release can be rebuilt from the same sources.
+> This updates the web snapshot. Vencord and Discohook are pinned separately so a release can be rebuilt from the same sources; the BotClient plugin is versioned with this repo in `plugin/`.
 
 1. Clone this repository and navigate into its directory (skip this step if you have already done so).
 

@@ -3,7 +3,7 @@
 import { spawn } from "child_process";
 import path from "path";
 import process from "process";
-import { existsSync, renameSync, rmSync, readFileSync, writeFileSync } from "fs";
+import { cpSync, existsSync, renameSync, rmSync, readFileSync, writeFileSync } from "fs";
 
 function runCommand(cmd: string, args: string[], opts: { cwd?: string } = {}): Promise<void> {
     return new Promise((resolve, reject) => {
@@ -24,6 +24,21 @@ function runCommand(cmd: string, args: string[], opts: { cwd?: string } = {}): P
             resolve();
         });
     });
+}
+
+// The plugin lives in plugin/; Vencord only builds userplugins from inside its own tree.
+function syncPlugin() {
+    const root = process.cwd();
+    const target = path.join(root, "Vencord", "src", "userplugins", "botClient");
+    if (existsSync(path.join(target, ".git"))) {
+        throw new Error(
+            `${target} is an old VencordDBCPlugin checkout. The plugin now lives in plugin/: ` +
+                "move any local changes there, delete that folder, and build again.",
+        );
+    }
+    rmSync(target, { recursive: true, force: true });
+    cpSync(path.join(root, "plugin"), target, { recursive: true });
+    console.log("➡️  Copied plugin/ to", target);
 }
 
 async function buildVencord() {
@@ -77,6 +92,7 @@ function copyAndPatch() {
 
 async function main() {
     try {
+        syncPlugin();
         await buildVencord();
         copyAndPatch();
         console.log("🎉 All done.");
