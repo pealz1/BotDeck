@@ -416,7 +416,10 @@ export class DiscordBotClient extends EventEmitter {
             return ["fullscreen", "clipboard-sanitized-write", "loopback-network"].includes(permission);
         });
         contents.on("will-navigate", (event, url) => {
-            if (!isMainOrigin(url)) event.preventDefault();
+            if (isMainOrigin(url)) return;
+            event.preventDefault();
+            // From #368: hand external web links to the OS browser instead of dropping them.
+            if (/^https?:\/\//i.test(url)) void shell.openExternal(url);
         });
         // Discord popout
         this.discordWebContents.setWindowOpenHandler(({ url }) => {
