@@ -911,10 +911,18 @@ export default definePlugin({
         // Deny stickers to be sent everywhere - From FakeNitro plugin
         {
             find: "canUseCustomStickersEverywhere:",
-            replacement: {
-                match: /(?<=canUseCustomStickersEverywhere:function\(\i\)\{)/,
-                replace: "return false;",
-            },
+            replacement: [
+                {
+                    match: /(?<=canUseCustomStickersEverywhere:function\(\i\)\{)/,
+                    replace: "return false;",
+                },
+                {
+                    // #386: Nitro is faked, but the API caps bot messages at 2000 chars. With the 4000 limit,
+                    // longer edits passed validation, got a 400, and Discord silently threw the edit away.
+                    match: /(?<=canUseIncreasedMessageLength:function\(\i\)\{)/,
+                    replace: "return false;",
+                },
+            ],
         },
         // Try handle Private Channel
         {
