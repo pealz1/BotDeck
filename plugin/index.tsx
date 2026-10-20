@@ -33,6 +33,7 @@ import {
     IconUtils,
     MessageActions,
     NavigationRouter,
+    openModal,
     PermissionsBits,
     PresenceStore,
     React,
@@ -45,13 +46,14 @@ import {
 
 import AuthBoxMultiTokenLogin, { multiTokenState } from "./components/AuthBoxMultiTokenLogin";
 import AuthBoxTokenLogin from "./components/AuthBoxTokenLogin";
+import EmbedEditorModal from "./components/EmbedEditor";
 // Components
 import { IconEmbedSvg } from "./icon.svg";
 import type { EmojiGuildData, Group, List, MemberPatch, OpItem, Ops } from "./typing/index.d.ts";
 import { buildDiscordAPIErrorMessage, originalSessionStorage, RegExToken, shardForGuild } from "./utils/common";
 import db from "./utils/database";
-import { memberDisplayName, sortByDisplayName } from "./utils/memberSort";
 import { hasEmbedPerms } from "./utils/fakeNitroPlugin";
+import { memberDisplayName, sortByDisplayName } from "./utils/memberSort";
 import { doIdentifyFirstPatch, handleClosePatch, handleDispatchPatch, openPrivateChannelPatch, updateGuildSubscriptionsPatch, voiceStateUpdatePatch } from "./utils/patches";
 import { SnowflakeUtil } from "./utils/SnowflakeUtil";
 import { PendingReplyStore, uploadFile } from "./utils/voiceMessagePlugin";
@@ -335,6 +337,25 @@ const requestOpenMessageEditorWindow = (
     window.addEventListener("message", onWindowMessage);
 };
 
+// #372: the old in-client Embed Builder. Sends no draft attachments (it never did).
+const submitLegacyEmbed = (channelId: string, messageId: string | null, body: any) =>
+    (messageId
+        ? RestAPI.patch({ url: Constants.Endpoints.MESSAGE(channelId, messageId), body })
+        : RestAPI.post({ url: Constants.Endpoints.MESSAGES(channelId), body })
+    )
+        .then(() => {
+            if (!messageId) {
+                FluxDispatcher.dispatch({ type: "DELETE_PENDING_REPLY", channelId });
+                FluxDispatcher.dispatch({ type: "DRAFT_CLEAR", channelId, draftType: DraftType.ChannelMessage });
+            }
+            showToast(`Embed has been ${messageId ? "edited" : "sent"} successfully`, Toasts.Type.SUCCESS);
+        })
+        .catch(e =>
+            sendBotMessage(channelId, {
+                content: `❌ An error occurred during ${messageId ? "editing" : "sending"} message\n${buildDiscordAPIErrorMessage(e?.body)}`,
+            }),
+        );
+
 const CreateAdvancedMessageEditor: ChatBarButtonFactory = prop => {
     const handle = () => {
         const channelId = prop.channel.id;
@@ -362,10 +383,17 @@ const CreateAdvancedMessageEditor: ChatBarButtonFactory = prop => {
         // idk how to pass attachments to Editor
         const reply = PendingReplyStore.getPendingReply(channelId);
         const content = getDraft(channelId) || undefined;
-        requestOpenMessageEditorWindow(channelId, null, "create", false, {
-            content,
-            message_reference: reply ? MessageActions.getSendMessageOptionsForReply(reply)?.messageReference : null,
-        });
+        const message_reference = reply ? MessageActions.getSendMessageOptionsForReply(reply)?.messageReference : null;
+        if (settings.store.embedEditor === "legacy") {
+            return openModal(modalProps => (
+                <EmbedEditorModal
+                    modalProps={modalProps}
+                    isCreate
+                    callbackSendEmbed={embed => submitLegacyEmbed(channelId, null, { content, embeds: [embed], message_reference })}
+                />
+            ));
+        }
+        requestOpenMessageEditorWindow(channelId, null, "create", false, { content, message_reference });
     };
     return (
         <ChatBarButton onClick={handle} tooltip="Advanced Message Editor (Beta)">
@@ -385,13 +413,18 @@ const EditAdvancedMessageEditor = msg => {
         });
         const channelId = msg.channel_id;
         const messageId = msg.id;
-        requestOpenMessageEditorWindow(
-            channelId,
-            messageId,
-            "edit",
-            (msgRaw.body.flags & MessageFlags.IS_COMPONENTS_V2) !== 0,
-            msgRaw.body,
-        );
+        const isComponentsV2 = (msgRaw.body.flags & MessageFlags.IS_COMPONENTS_V2) !== 0;
+        // Components V2 messages cannot carry embeds, so they always use the Discohook editor
+        if (settings.store.embedEditor === "legacy" && !isComponentsV2) {
+            return openModal(modalProps => (
+                <EmbedEditorModal
+                    modalProps={modalProps}
+                    messageRaw={msgRaw.body}
+                    callbackSendEmbed={(_, body) => submitLegacyEmbed(channelId, messageId, body)}
+                />
+            ));
+        }
+        requestOpenMessageEditorWindow(channelId, messageId, "edit", isComponentsV2, msgRaw.body);
     };
     if (msg.author.id === GetApplicationId.getId()) {
         return {
@@ -419,6 +452,15 @@ const settings = definePluginSettings({
         type: OptionType.NUMBER,
         default: 2,
         restartNeeded: false,
+    },
+    embedEditor: {
+        description:
+            "Editor opened by the embed buttons. Legacy is the old built-in Embed Builder (uses Discord's own components, may break after Discord updates)",
+        type: OptionType.SELECT,
+        options: [
+            { label: "Advanced Message Editor (Discohook)", value: "discohook", default: true },
+            { label: "Legacy Embed Builder", value: "legacy" },
+        ],
     },
     embedChatButton: {
         description: "Add a button to show the Embed Editor modal in the chat bar",

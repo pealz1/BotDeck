@@ -4,43 +4,14 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
-import { BaseText } from "@components/BaseText";
 import { Button } from "@components/Button";
 import { Card } from "@components/Card";
 import { Flex } from "@components/Flex";
-import { FormSwitch } from "@components/FormSwitch";
+import { FormSwitchCompat } from "@components/FormSwitch";
 import { Heading } from "@components/Heading";
 import { DeleteIcon } from "@components/Icons";
-import {
-    ModalCloseButton,
-    ModalContent,
-    ModalFooter,
-    ModalHeader,
-    ModalProps,
-    ModalRoot,
-    ModalSize,
-} from "@utils/modal";
-import { findComponentByCodeLazy } from "@webpack";
-import { React, Slider, TextArea, TextInput } from "@webpack/common";
-import type { PropsWithChildren } from "react";
-
-/** Compatibility with Discord's old FormSwitch */
-function FormSwitchCompat(props: PropsWithChildren<any>) {
-    return <FormSwitch {...props} title={props.children ?? ""} description={props.note} />;
-}
-
-// Code from clientTheme plugin (kept for future use)
-const ColorPicker = findComponentByCodeLazy(
-    "#{intl::USER_SETTINGS_PROFILE_COLOR_SELECT_COLOR}",
-    ".BACKGROUND_PRIMARY)",
-);
-
-const colorPresets = [
-    "#FF5733", "#FFBD33", "#DBFF33", "#75FF33", "#33FF57",
-    "#33DBFF", "#3375FF", "#5733FF", "#BD33FF", "#FF33DB",
-    "#FF3375", "#FF3333", "#FF7F33", "#33FF3A", "#33FF8A",
-    "#33FFC1", "#333FFF", "#7F33FF", "#FF33C1", "#FF337F",
-];
+import type { RenderModalProps } from "@vencord/discord-types";
+import { Modal, React, Slider, TextArea, TextInput } from "@webpack/common";
 
 const PLACEHOLDER_TEXT = "ヾ(≧▽≦*)o";
 const MAX_FIELDS = 25;
@@ -130,7 +101,7 @@ export default function EmbedEditorModal({
     messageRaw,
     isCreate,
 }: {
-    modalProps: ModalProps;
+    modalProps: RenderModalProps;
     callbackSendEmbed: (data: any, msg: any) => void;
     messageRaw?: any;
     isCreate?: boolean;
@@ -248,7 +219,6 @@ export default function EmbedEditorModal({
             updatedEmbeds[indexE] = embed;
             callbackSendEmbed(embed, {
                 attachments: messageRaw.attachments,
-                flags: messageRaw.flags,
                 embeds: updatedEmbeds,
             });
         } else {
@@ -268,14 +238,13 @@ export default function EmbedEditorModal({
     );
 
     return (
-        <ModalRoot {...modalProps} size={ModalSize.DYNAMIC}>
-            <ModalHeader>
-                <BaseText size="lg" weight="bold" style={{ flexGrow: 1 }}>
-                    Embed Builder
-                </BaseText>
-                <ModalCloseButton onClick={modalProps.onClose} />
-            </ModalHeader>
-            <ModalContent>
+        <Modal
+            {...modalProps}
+            size="xl"
+            title="Embed Builder"
+            actions={[{ text: isCreate ? "Create it !" : "Edit it !", variant: "primary", onClick: handleSubmit }]}
+        >
+            <>
                 <Flex flexDirection="column" style={{ padding: 12 }}>
                     {/* Author */}
                     <Card style={{ padding: "1em 1em 0" }}>
@@ -407,7 +376,7 @@ export default function EmbedEditorModal({
                             <div style={{ flex: 1, marginRight: 0 }}>
                                 <Heading>Image URL</Heading>
                                 <TextInput
-                                    placeholder="attachment://image.png"
+                                    placeholder="https://i.imgur.com/image.png"
                                     onChange={setImage}
                                     value={image}
                                     spellCheck={false}
@@ -517,7 +486,7 @@ export default function EmbedEditorModal({
                     </Card>
 
                     {/* Embed selector (edit mode only) */}
-                    {!isCreate && (
+                    {!isCreate && richEmbeds.length > 0 && (
                         <Card style={{ padding: "1em 1em 0" }}>
                             <Heading style={{ width: "fit-content" }} tag="h3">
                                 Select Embeds (Edit mode)
@@ -537,14 +506,7 @@ export default function EmbedEditorModal({
                         </Card>
                     )}
                 </Flex>
-            </ModalContent>
-            <ModalFooter>
-                <Flex flexDirection="row" style={{ gap: 12 }}>
-                    <Button onClick={handleSubmit}>
-                        {isCreate ? "Create it !" : "Edit it !"}
-                    </Button>
-                </Flex>
-            </ModalFooter>
-        </ModalRoot>
+            </>
+        </Modal>
     );
 }
