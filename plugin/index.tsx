@@ -839,7 +839,7 @@ export default definePlugin({
                     match: /(this\.token=)(\w+)(,)(\w+)(\.verbose\("\[IDENTIFY\]"\);)/,
                     //       $1            $2   $3  $4       $5
                     replace:
-                        '$& $2=$2.replace(/bot/gi,"").trim();this.token=$2;const botInfo = await $self.doIdentifyFirstPatch($2, $self, this._handleClose.bind(this));if(!botInfo)return;',
+                        '$& $2=$2.replace(/^bot\\s+/i,"").trim();this.token=$2;const dbcIdentifyStart=this.identifyStartTime;const botInfo = await $self.doIdentifyFirstPatch($2, $self, this._handleClose.bind(this));if(!botInfo||this.identifyStartTime!==dbcIdentifyStart)return;',
                 },
                 // Sharding
                 {

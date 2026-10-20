@@ -100,14 +100,14 @@ export function voiceStateUpdatePatch(data: {
 export function handleClosePatch(event: any, closeCode: number, reason: string) {
     if (closeCode === 4013) {
         Toasts.show({
-            message: "Login Failure: Invalid intent(s), Logout...",
+            message: "Login Failure: Invalid intent(s). Check Developer Portal > Bot > Privileged Gateway Intents",
             id: Toasts.genId(),
             type: Toasts.Type.FAILURE,
         });
         closeCode = 4004;
     } else if (closeCode === 4014) {
         Toasts.show({
-            message: "Login Failure: Disallowed intent(s), Logout...",
+            message: "Login Failure: Disallowed intent(s). Enable them in Developer Portal > Bot > Privileged Gateway Intents",
             id: Toasts.genId(),
             type: Toasts.Type.FAILURE,
         });
@@ -172,12 +172,12 @@ export function handleDispatchPatch(data: any, eventName: string, n: any, receiv
         // ! todo: fix me
         const experiments = Object.entries(ExperimentStore.getRegisteredExperiments())
             .map(([id, data]) => ({ id, ...data }))
+            .filter(exp => exp.type === "user")
             .sort((a, b) => {
-                const titleA = a.title.toLowerCase();
-                const titleB = b.title.toLowerCase();
+                const titleA = (a.title ?? "").toLowerCase();
+                const titleB = (b.title ?? "").toLowerCase();
                 return titleA < titleB ? -1 : titleA > titleB ? 1 : 0;
-            })
-            .filter(exp => exp.type === "user");
+            });
 
         // Private Channels
         const defaultPrivateChannel = window.BotClientNative.getPrivateChannelDefault();
@@ -269,6 +269,15 @@ export function handleDispatchPatch(data: any, eventName: string, n: any, receiv
     return data;
 }
 
+// Privileged intents, named as on the Developer Portal Bot page
+const PRIVILEGED_INTENTS: [name: string, bit: number][] = [
+    ["Presence", 1 << 8],
+    ["Server Members", 1 << 1],
+    ["Message Content", 1 << 15],
+];
+// #364: these toasts showed on every reconnect; announce each bot+shard once per session.
+const announcedLogins = new Set<string>();
+
 export async function doIdentifyFirstPatch(token: string, self: any, handleCloseCallback: (event: any, closeCode: number, reason: string) => void) {
     const botInfo = await window.BotClientNative.getBotInfo(token);
     self.console.log("[Electron > Client] Discord Bot metadata", botInfo);
@@ -289,17 +298,27 @@ export async function doIdentifyFirstPatch(token: string, self: any, handleClose
     }
     // Reset Voice State
     latestGuildIdVoiceConnect = "0";
-    self.console.log(`[Client > Electron] Bot Intents: ${intents} Shard ID: ${originalSessionStorage.getItem("currentShard")} (All: ${botInfo.allShards} )`);
-    Toasts.show({
-        message: `Bot Intents: ${intents}`,
-        id: Toasts.genId(),
-        type: Toasts.Type.SUCCESS,
-    });
-    Toasts.show({
-        message: `Shard ID: ${originalSessionStorage.getItem("currentShard")} (All: ${botInfo.allShards})`,
-        id: Toasts.genId(),
-        type: Toasts.Type.SUCCESS,
-    });
+    const shard = originalSessionStorage.getItem("currentShard");
+    self.console.log(`[Client > Electron] Bot Intents: ${intents} Shard ID: ${shard} (All: ${botInfo.allShards} )`);
+    const loginKey = `${botInfo.data?.id}:${shard}`;
+    if (!announcedLogins.has(loginKey)) {
+        announcedLogins.add(loginKey);
+        // #286: name the privileged intents that are off instead of only a raw number
+        const missing = PRIVILEGED_INTENTS.filter(([, bit]) => !(intents & bit)).map(([name]) => name);
+        Toasts.show({
+            message: missing.length
+                ? `Intents off: ${missing.join(", ")}. Enable in Developer Portal > Bot > Privileged Gateway Intents`
+                : `Bot Intents: ${intents}`,
+            id: Toasts.genId(),
+            type: missing.length ? Toasts.Type.MESSAGE : Toasts.Type.SUCCESS,
+            options: missing.length ? { duration: 8000 } : undefined,
+        });
+        Toasts.show({
+            message: `Shard ID: ${shard} (All: ${botInfo.allShards})`,
+            id: Toasts.genId(),
+            type: Toasts.Type.SUCCESS,
+        });
+    }
     return botInfo;
 }
 
