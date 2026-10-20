@@ -4,6 +4,7 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
+import * as DataStore from "@api/DataStore";
 import { findStoreLazy } from "@webpack";
 import { ChannelStore, Constants, FluxDispatcher, RestAPI, Toasts, UserStore } from "@webpack/common";
 
@@ -297,10 +298,16 @@ export async function doIdentifyFirstPatch(token: string, self: any, handleClose
     }
     const { intents, allShards } = botInfo;
     originalSessionStorage.setItem("allShards", botInfo.allShards);
-    // Session Storage
-    if (originalSessionStorage.getItem("currentShard") === null || parseInt(originalSessionStorage.getItem("currentShard")!) + 1 > allShards) {
+    // Session Storage. sessionStorage is empty after a relaunch, so start on this bot's last shard (#231).
+    const shardKey = `BotClient_lastShard_${botInfo.data?.id}`;
+    if (originalSessionStorage.getItem("currentShard") === null) {
+        const saved = await DataStore.get<number>(shardKey).catch(() => undefined);
+        originalSessionStorage.setItem("currentShard", String(saved ?? 0));
+    }
+    if (parseInt(originalSessionStorage.getItem("currentShard")!) + 1 > allShards) {
         originalSessionStorage.setItem("currentShard", "0");
     }
+    void DataStore.set(shardKey, parseInt(originalSessionStorage.getItem("currentShard")!)).catch(() => {});
     // Reset Voice State
     latestGuildIdVoiceConnect = "0";
     const shard = originalSessionStorage.getItem("currentShard");
