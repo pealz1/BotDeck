@@ -130,7 +130,9 @@ export function handleDispatchPatch(data: any, eventName: string, n: any, receiv
                 self.db.handleOpenPrivateChannel(
                     UserStore.getCurrentUser().id,
                     channel.recipients[0].id,
-                    channel.id
+                    channel.id,
+                    channel.recipients[0],
+                    data.id,
                 );
                 self.console.debug("[Client > Electron] Add Private channel (From MESSAGE_CREATE event)");
             }
@@ -140,6 +142,13 @@ export function handleDispatchPatch(data: any, eventName: string, n: any, receiv
             return receiveDispatch(data, eventName, n);
         });
         return false;
+    }
+    // #317: keep a known DM's cached recipient and last message current, so it reloads named and in order
+    if (eventName === "MESSAGE_CREATE" && !data.guild_id && data.author && self.settings.store.saveDirectMessage) {
+        const botId = UserStore.getCurrentUser()?.id;
+        if (botId && data.author.id !== botId) {
+            self.db.handleOpenPrivateChannel(botId, data.author.id, data.channel_id, data.author, data.id);
+        }
     }
     if (eventName === "READY_SUPPLEMENTAL") {
         self.console.log("[Client]: Ready Supplemental event", data);
@@ -357,10 +366,13 @@ export async function openPrivateChannelPatch(e: any, this_args: any, self: any)
     }
     const result = await this_args.openPrivateChannel_(e);
     if (self.settings.store.saveDirectMessage) {
+        const user = UserStore.getUser(userId);
         self.db.handleOpenPrivateChannel(
             UserStore.getCurrentUser().id,
             userId,
-            result
+            result,
+            user && { id: user.id, username: user.username, global_name: user.globalName, avatar: user.avatar, discriminator: user.discriminator, bot: user.bot },
+            ChannelStore.getChannel(result)?.lastMessageId ?? null,
         );
         self.console.debug("[Client > Electron] Add Private channel (From openPrivateChannel function)");
     }

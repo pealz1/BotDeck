@@ -35,19 +35,17 @@ export class BotClientDatabase {
         logger.log("Querying all private channels for bot", botId);
         return this.database.PrivateChannel.where("botId").equals(botId).toArray();
     }
-    handleOpenPrivateChannel(botId: string, userId: string, channelId: string) {
+    // #317: store the full recipient. A replayed CHANNEL_CREATE with only { id } creates a nameless user,
+    // so the DM came back blank after a relaunch until the user was looked up again.
+    handleOpenPrivateChannel(botId: string, userId: string, channelId: string, recipient?: Record<string, any>, lastMessageId: string | null = null) {
         logger.log("Opening private channel", { botId, userId, channelId });
         return this.database.PrivateChannel.put({
             botId,
             channelId,
             data: {
                 type: 1,
-                recipients: [
-                    {
-                        id: userId,
-                    },
-                ],
-                last_message_id: null,
+                recipients: [recipient?.id === userId ? recipient : { id: userId }],
+                last_message_id: lastMessageId,
                 is_spam: false,
                 id: channelId,
                 flags: 0,
