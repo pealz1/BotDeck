@@ -1,6 +1,7 @@
 /* Copyright Elysia © 2025. All rights reserved */
 
 import { X509Certificate } from "crypto";
+import { app as electronApp } from "electron";
 import { scope } from "electron-log";
 import express from "express";
 import { readFileSync } from "fs";
@@ -20,6 +21,9 @@ const app = express();
 if (Constants.VerboseAPIServerLogging) {
     app.use(
         morgan("dev", {
+            // #299: every request was a synchronous log write on the main process (~1300 per startup).
+            // Installed builds keep only failed requests, which is what bug reports need.
+            skip: (_req, res) => electronApp.isPackaged && res.statusCode < 400,
             stream: {
                 write: msg => logger.info(msg.replace(/\n/g, "")),
             },
