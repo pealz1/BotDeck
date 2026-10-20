@@ -50,6 +50,7 @@ import { IconEmbedSvg } from "./icon.svg";
 import type { EmojiGuildData, Group, List, MemberPatch, OpItem, Ops } from "./typing/index.d.ts";
 import { buildDiscordAPIErrorMessage, originalSessionStorage, RegExToken } from "./utils/common";
 import db from "./utils/database";
+import { memberDisplayName, sortByDisplayName } from "./utils/memberSort";
 import { hasEmbedPerms } from "./utils/fakeNitroPlugin";
 import { doIdentifyFirstPatch, handleClosePatch, handleDispatchPatch, openPrivateChannelPatch, updateGuildSubscriptionsPatch, voiceStateUpdatePatch } from "./utils/patches";
 import { SnowflakeUtil } from "./utils/SnowflakeUtil";
@@ -1523,21 +1524,18 @@ export default definePlugin({
                 // group.id = role.id
                 (guildRoles[b.group.id]?.position ?? 0) - (guildRoles[a.group.id]?.position ?? 0),
         );
-        // Sorting members by nickname
+        // Sort every group by the name shown in the list (#363)
+        const displayName = (m: MemberPatch) => memberDisplayName(m.nick, UserStore.getUser(m.userId), m.userId);
         for (const list of sortedLists) {
             ops.push({ group: list.group });
-
-            list.members
-                .sort((a, b) => (a.nick || "").localeCompare(b.nick || ""))
-                .forEach(m => ops.push({ member: m }));
-
+            for (const m of sortByDisplayName(list.members, displayName)) ops.push({ member: m });
             groups.push(list.group);
         }
         // Offline members
         if (offlineMembers.length) {
             const offlineGroup = { id: "offline", count: offlineMembers.length };
             ops.push({ group: offlineGroup });
-            for (const m of offlineMembers) ops.push({ member: m });
+            for (const m of sortByDisplayName(offlineMembers, displayName)) ops.push({ member: m });
             groups.push(offlineGroup);
         }
         return {

@@ -13,7 +13,8 @@
   "license": "GPL-3.0",
   "main": "build/index.js",
   "scripts": {
-    "test": "node --test tests/electron.test.cjs",
+    "test": "node --test tests/electron.test.cjs && npm run test:plugin",
+    "test:plugin": "tsx --test tests/plugin/*.test.ts",
     "test:app": "npm run build:ts && npm run start",
     "test:app:vc": "npm run vencord && npm run build:ts && npm run start",
     "typecheck": "tsc --noEmit && tsc -p tsconfig.renderer.json && tsc --noEmit --strict --skipLibCheck --target es2024 --module commonjs --moduleResolution node tests/settings-types.ts",
