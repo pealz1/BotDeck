@@ -132,7 +132,6 @@ export function handleDispatchPatch(data: any, eventName: string, n: any, receiv
                     channel.recipients[0].id,
                     channel.id,
                     channel.recipients[0],
-                    data.id,
                 );
                 self.console.debug("[Client > Electron] Add Private channel (From MESSAGE_CREATE event)");
             }
@@ -143,11 +142,12 @@ export function handleDispatchPatch(data: any, eventName: string, n: any, receiv
         });
         return false;
     }
-    // #317: keep a known DM's cached recipient and last message current, so it reloads named and in order
+    // #317: keep a known DM's cached recipient current, so it reloads with a name
     if (eventName === "MESSAGE_CREATE" && !data.guild_id && data.author && self.settings.store.saveDirectMessage) {
         const botId = UserStore.getCurrentUser()?.id;
-        if (botId && data.author.id !== botId) {
-            self.db.handleOpenPrivateChannel(botId, data.author.id, data.channel_id, data.author, data.id);
+        const channel = ChannelStore.getChannel(data.channel_id);
+        if (botId && channel?.type === 1 && channel.getRecipientId() === data.author.id) {
+            self.db.handleOpenPrivateChannel(botId, data.author.id, data.channel_id, data.author);
         }
     }
     if (eventName === "READY_SUPPLEMENTAL") {
@@ -309,9 +309,10 @@ export async function doIdentifyFirstPatch(token: string, self: any, handleClose
     originalSessionStorage.setItem("allShards", botInfo.allShards);
     // Session Storage. sessionStorage is empty after a relaunch, so start on this bot's last shard (#231).
     const shardKey = `BotClient_lastShard_${botInfo.data?.id}`;
-    if (originalSessionStorage.getItem("currentShard") === null) {
+    if (originalSessionStorage.getItem("currentShard") === null || originalSessionStorage.getItem("currentShardBot") !== botInfo.data?.id) {
         const saved = await DataStore.get<number>(shardKey).catch(() => undefined);
         originalSessionStorage.setItem("currentShard", String(saved ?? 0));
+        originalSessionStorage.setItem("currentShardBot", botInfo.data?.id);
     }
     if (parseInt(originalSessionStorage.getItem("currentShard")!) + 1 > allShards) {
         originalSessionStorage.setItem("currentShard", "0");
@@ -372,7 +373,6 @@ export async function openPrivateChannelPatch(e: any, this_args: any, self: any)
             userId,
             result,
             user && { id: user.id, username: user.username, global_name: user.globalName, avatar: user.avatar, discriminator: user.discriminator, bot: user.bot },
-            ChannelStore.getChannel(result)?.lastMessageId ?? null,
         );
         self.console.debug("[Client > Electron] Add Private channel (From openPrivateChannel function)");
     }

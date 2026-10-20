@@ -37,7 +37,8 @@ export class BotClientDatabase {
     }
     // #317: store the full recipient. A replayed CHANNEL_CREATE with only { id } creates a nameless user,
     // so the DM came back blank after a relaunch until the user was looked up again.
-    handleOpenPrivateChannel(botId: string, userId: string, channelId: string, recipient?: Record<string, any>, lastMessageId: string | null = null) {
+    // last_message_id stays null: bots cannot ack, so a replayed DM with a real id would show as unread on every relaunch.
+    handleOpenPrivateChannel(botId: string, userId: string, channelId: string, recipient?: Record<string, any>) {
         logger.log("Opening private channel", { botId, userId, channelId });
         return this.database.PrivateChannel.put({
             botId,
@@ -45,7 +46,7 @@ export class BotClientDatabase {
             data: {
                 type: 1,
                 recipients: [recipient?.id === userId ? recipient : { id: userId }],
-                last_message_id: lastMessageId,
+                last_message_id: null,
                 is_spam: false,
                 id: channelId,
                 flags: 0,

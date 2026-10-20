@@ -40,6 +40,7 @@ import {
     RestAPI,
     showToast,
     Toasts,
+    UploadAttachmentStore,
     UserGuildSettingsStore,
     UserStore,
     VoiceStateStore
@@ -339,7 +340,7 @@ const requestOpenMessageEditorWindow = (
     window.addEventListener("message", onWindowMessage);
 };
 
-// #372: the old in-client Embed Builder. Sends no draft attachments (it never did).
+// #372: the old in-client Embed Builder. It cannot send attached files; the button refuses when there are any.
 const submitLegacyEmbed = (channelId: string, messageId: string | null, body: any) =>
     (messageId
         ? RestAPI.patch({ url: Constants.Endpoints.MESSAGE(channelId, messageId), body })
@@ -387,6 +388,9 @@ const CreateAdvancedMessageEditor: ChatBarButtonFactory = prop => {
         const content = getDraft(channelId) || undefined;
         const message_reference = reply ? MessageActions.getSendMessageOptionsForReply(reply)?.messageReference : null;
         if (settings.store.embedEditor === "legacy") {
+            if (UploadAttachmentStore.getUploadCount(channelId, DraftType.ChannelMessage) > 0) {
+                return showToast("The legacy Embed Builder can't send attached files. Remove them or use the Discohook editor.", Toasts.Type.FAILURE);
+            }
             return openModal(modalProps => (
                 <EmbedEditorModal
                     modalProps={modalProps}

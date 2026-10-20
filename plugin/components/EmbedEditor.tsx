@@ -213,6 +213,8 @@ export default function EmbedEditorModal({
         });
 
         if (!Object.keys(embed).length) return;
+        // The timestamp toggle is a boolean; keep the edited embed's original time instead of "now".
+        if (embed.timestamp && richEmbeds[indexE]?.timestamp) embed.timestamp = richEmbeds[indexE].timestamp;
 
         if (messageRaw) {
             const updatedEmbeds = [...richEmbeds];
