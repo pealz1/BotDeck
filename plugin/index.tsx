@@ -40,6 +40,7 @@ import {
     RestAPI,
     showToast,
     Toasts,
+    UserGuildSettingsStore,
     UserStore,
     VoiceStateStore
 } from "@webpack/common";
@@ -53,6 +54,7 @@ import type { EmojiGuildData, Group, List, MemberPatch, OpItem, Ops } from "./ty
 import { buildDiscordAPIErrorMessage, originalSessionStorage, RegExToken, shardForGuild } from "./utils/common";
 import db from "./utils/database";
 import { hasEmbedPerms } from "./utils/fakeNitroPlugin";
+import { toWireGuildSettings } from "./utils/guildSettings";
 import { memberDisplayName, sortByDisplayName } from "./utils/memberSort";
 import { doIdentifyFirstPatch, handleClosePatch, handleDispatchPatch, openPrivateChannelPatch, updateGuildSubscriptionsPatch, voiceStateUpdatePatch } from "./utils/patches";
 import { SnowflakeUtil } from "./utils/SnowflakeUtil";
@@ -439,6 +441,16 @@ const EditAdvancedMessageEditor = msg => {
         return null;
     }
 };
+
+// #293: Discord cannot store a bot's server notification settings, so keep them per bot locally.
+// Flux subscriptions run after UserGuildSettingsStore has merged the change, so read the merged entry.
+function persistGuildSettings({ guildId }: { guildId: string | null; }) {
+    const botId = UserStore.getCurrentUser()?.id;
+    const key = String(guildId);
+    const entry = UserGuildSettingsStore.getAllSettings().userGuildSettings[key];
+    if (!botId || !entry) return;
+    db.setUserGuildSettings(botId, key, toWireGuildSettings(key, entry)).catch(e => BotClientLogger.error("Saving guild settings failed", e));
+}
 
 const settings = definePluginSettings({
     showMemberList: {
@@ -1295,6 +1307,12 @@ export default definePlugin({
         },
     ],
     flux: {
+        // Not USER_GUILD_SETTINGS_FULL_UPDATE: that is the READY replay itself
+        USER_GUILD_SETTINGS_GUILD_UPDATE: persistGuildSettings,
+        USER_GUILD_SETTINGS_GUILD_AND_CHANNELS_UPDATE: persistGuildSettings,
+        USER_GUILD_SETTINGS_CHANNEL_UPDATE: persistGuildSettings,
+        USER_GUILD_SETTINGS_CHANNEL_UPDATE_BULK: persistGuildSettings,
+        GUILD_TOGGLE_COLLAPSE_MUTED: persistGuildSettings,
         GUILD_MEMBER_LIST_UPDATE(data) {
             BotClientLogger.debug(
                 "botClient#updateGuildMembersList()",

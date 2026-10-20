@@ -187,6 +187,11 @@ export function handleDispatchPatch(data: any, eventName: string, n: any, receiv
             });
         }
 
+        // #293: replay this bot's saved server notification settings, queued after READY like the DMs above
+        self.db.queryAllUserGuildSettings(data.user.id).then(rows => {
+            rows.forEach(row => setTimeout(() => receiveDispatch(row.data, "USER_GUILD_SETTINGS_UPDATE", null), 0));
+        });
+
         // It's not working (cannot using await)
         // ${data}.user_settings_proto = await $self.db.getPreloadedUserSettingsBase64(${data}.user.id);
 

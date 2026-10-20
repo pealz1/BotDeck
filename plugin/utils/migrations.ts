@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
-import Dexie, { type EntityTable,type Transaction } from "dexie";
+import Dexie, { type EntityTable, type Table, type Transaction } from "dexie";
 
 import type {
     FrecencyUserSettings,
@@ -27,10 +27,17 @@ export interface FrecencyUserSettingsEntry {
     data: FrecencyUserSettings; // protobuf
 }
 
+export interface UserGuildSettingsEntry {
+    botId: string; // [botId+guildId] primary key
+    guildId: string; // "null" for DMs (IndexedDB keys cannot be null)
+    data: Record<string, any>; // gateway user_guild_settings entry
+}
+
 export type DexieExtended = Dexie & {
     PrivateChannel: EntityTable<Channel, "channelId">;
     PreloadedUserSettings: EntityTable<PreloadedUserSettingsEntry, "botId">;
     FrecencyUserSettings: EntityTable<FrecencyUserSettingsEntry, "botId">;
+    UserGuildSettings: Table<UserGuildSettingsEntry, [string, string]>;
 };
 
 const schemaV1 = {
@@ -50,4 +57,6 @@ export function registerMigrations(database: Dexie) {
     database.version(2)
         .stores(schemaV1)
         .upgrade(migrateToVersion2);
+    // #293: per-bot server notification settings
+    database.version(3).stores({ ...schemaV1, UserGuildSettings: "[botId+guildId], botId" });
 }

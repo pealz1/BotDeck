@@ -62,6 +62,13 @@ export class BotClientDatabase {
         logger.log("Clearing DMs cache for bot", botId);
         return this.database.PrivateChannel.where("botId").equals(botId).delete();
     }
+    // UserGuildSettings (server notification settings, #293)
+    queryAllUserGuildSettings(botId: string) {
+        return this.database.UserGuildSettings.where("botId").equals(botId).toArray();
+    }
+    setUserGuildSettings(botId: string, guildId: string, data: Record<string, any>) {
+        return this.database.UserGuildSettings.put({ botId, guildId, data });
+    }
     // PreloadedUserSettings & FrecencyUserSettings methods
     async getPreloadedUserSettings(botId: string) {
         logger.log("Getting preloaded user settings for bot", botId);
