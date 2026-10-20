@@ -150,6 +150,9 @@ Logging in works via the UI on first startup of the application.
 > [!TIP]
 > If you want a list of members and their status, enable all intents.
 
+> [!TIP]
+> Messages missing or empty? Intents are switched on in the Discord Developer Portal (your application > Bot > Privileged Gateway Intents), not in DBC; bots in 100 or more servers need Discord's approval. An empty channel usually means the bot's role lacks View Channel or Read Message History there. A bot cannot DM someone who blocks DMs from server members or shares no server with it (Discord error 50007).
+
 ![image](https://i.imgur.com/VENMB1U.png)
 
 ---

@@ -1,7 +1,7 @@
 /* Copyright Elysia © 2025. All rights reserved */
 
 import { APIApplication, ApplicationFlags, GatewayIntentBits } from "discord-api-types/v10";
-import { app, BrowserWindow, dialog, IpcMainEvent, IpcMainInvokeEvent, WebContents } from "electron";
+import { app, BrowserWindow, dialog, IpcMainEvent, IpcMainInvokeEvent, shell, WebContents } from "electron";
 import { ApplicationFlagsBitField, IntentsBitField } from "src/AppUtils/DiscordBitField";
 import { ApexExperiment, GuildExperiment, UserExperiment } from "src/AppUtils/Experiments";
 
@@ -122,10 +122,26 @@ export function setupIPCEvents (mainApp: DiscordBotClient) {
                     skipIntents.has(GatewayIntentBits.MessageContent) &&
                     !mainApp.config.config.suppress_intent_warning
                 ) {
-                    dialog.showErrorBox(
-                        "MessageContent is required",
-                        "You need to enable the MessageContent intent in the application settings.\nIf you want to permanently suppress this warning, change the application settings (accessible from the tray menu via right-click)",
-                    );
+                    // #286: say where the switch is (the Developer Portal, not DBC) and link straight to it.
+                    const portalUrl = /^\d{17,20}$/.test(data.id)
+                        ? `https://discord.com/developers/applications/${data.id}/bot`
+                        : "https://discord.com/developers/applications";
+                    void dialog
+                        .showMessageBox(mainApp.appWindow, {
+                            type: "error",
+                            title: "Message Content intent is off",
+                            message: "Turn on the Message Content intent for this bot, then log in again.",
+                            detail:
+                                "Discord Developer Portal > your application > Bot > Privileged Gateway Intents > Message Content Intent > Save Changes.\n\n" +
+                                "Without it, server messages appear empty. Bots in 100 or more servers need Discord's approval for this intent.\n\n" +
+                                'To log in anyway, turn on "Skip message content intent check" in DBC Settings (tray menu).',
+                            buttons: ["Open Developer Portal", "Close"],
+                            defaultId: 0,
+                            cancelId: 1,
+                        })
+                        .then(({ response }) => {
+                            if (response === 0) void shell.openExternal(portalUrl);
+                        });
                     throw new Error("MESSAGE_CONTENT is required.");
                 }
                 return {
