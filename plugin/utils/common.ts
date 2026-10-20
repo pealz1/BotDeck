@@ -8,6 +8,10 @@ export const RegExToken = /(mfa\.[a-z0-9_-]{20,})|([a-z0-9_-]{23,28}\.[a-z0-9_-]
 
 export const originalSessionStorage = window.sessionStorage;
 
+/** Discord's shard formula: (guild_id >> 22) % shard_count; one shard when the count is unknown. */
+export const shardForGuild = (guildId: string, allShards: number) =>
+    Number((BigInt(guildId) >> 22n) % BigInt(Math.max(1, allShards || 1)));
+
 export function extractApiErrors(errorResponse) {
     const extractedErrors: {
         path: string;

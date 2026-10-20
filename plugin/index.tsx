@@ -48,7 +48,7 @@ import AuthBoxTokenLogin from "./components/AuthBoxTokenLogin";
 // Components
 import { IconEmbedSvg } from "./icon.svg";
 import type { EmojiGuildData, Group, List, MemberPatch, OpItem, Ops } from "./typing/index.d.ts";
-import { buildDiscordAPIErrorMessage, originalSessionStorage, RegExToken } from "./utils/common";
+import { buildDiscordAPIErrorMessage, originalSessionStorage, RegExToken, shardForGuild } from "./utils/common";
 import db from "./utils/database";
 import { memberDisplayName, sortByDisplayName } from "./utils/memberSort";
 import { hasEmbedPerms } from "./utils/fakeNitroPlugin";
@@ -58,6 +58,31 @@ import { PendingReplyStore, uploadFile } from "./utils/voiceMessagePlugin";
 
 const GetToken = findByPropsLazy("getToken", "setToken");
 const LoginToken = findByPropsLazy("loginToken", "login");
+
+/**
+ * Opens a server by ID, reconnecting to its shard first when it is not loaded (#343).
+ * loginToken resolves before READY/GUILD_CREATE, so wait for the guild before navigating.
+ */
+async function openGuildById(guildId: string, channelId?: string): Promise<"ok" | "not_member" | "timeout"> {
+    if (!GuildStore.getGuild(guildId)) {
+        const res = await RestAPI.get({ url: Constants.Endpoints.GUILD(guildId) }).catch(e => e);
+        if (!res?.ok) return "not_member";
+        const allShards = parseInt(originalSessionStorage.getItem("allShards") || "1");
+        const shardId = String(shardForGuild(guildId, allShards));
+        if (allShards > 1 && originalSessionStorage.getItem("currentShard") !== shardId) {
+            originalSessionStorage.setItem("currentShard", shardId);
+            await LoginToken.loginToken(GetToken.getToken());
+        }
+        // ponytail: 250ms poll like fixPreloadedUserSettings; a GUILD_CREATE subscription if it ever matters
+        const stopTime = Date.now() + 30_000;
+        while (!GuildStore.getGuild(guildId)) {
+            if (Date.now() > stopTime) return "timeout";
+            await new Promise(r => setTimeout(r, 250));
+        }
+    }
+    NavigationRouter.transitionToGuild(guildId, channelId);
+    return "ok";
+}
 const murmurhash = findByPropsLazy("v3", "v2");
 const GetApplicationId = findByPropsLazy("getToken", "getId", "getSessionId");
 
@@ -1149,22 +1174,21 @@ export default definePlugin({
                         break;
                     }
                     case "guild": {
-                        const guild = findOption<string>(subCommand.options, "id", "");
-                        const allShards = parseInt((originalSessionStorage.getItem("allShards") as string) || "0");
-                        if (!/^\d{17,19}$/.test(guild)) {
+                        const guild = findOption<string>(subCommand.options, "id", "").trim();
+                        if (!/^\d{17,20}$/.test(guild)) {
                             return sendBotMessage(ctx.channel.id, {
                                 content: "🚫 Invalid guild ID",
                             });
                         }
-                        if (allShards === 1) {
-                            return sendBotMessage(ctx.channel.id, {
-                                content: "🚫 Cannot switch guild in single shard",
+                        const result = await openGuildById(guild);
+                        if (result === "not_member") {
+                            sendBotMessage(ctx.channel.id, {
+                                content: `🚫 The bot is not in server **${guild}** (or the ID is wrong)`,
                             });
+                        } else if (result === "timeout") {
+                            // The command's channel may be gone after a shard switch, so use a toast.
+                            showToast(`Server ${guild} did not load. Try /switch guild again.`, Toasts.Type.FAILURE);
                         }
-                        const shardId = Number((BigInt(guild) >> 22n) % BigInt(allShards));
-                        originalSessionStorage.setItem("currentShard", shardId as any);
-                        await LoginToken.loginToken(GetToken.getToken());
-                        NavigationRouter.transitionToGuild(guild);
                         break;
                     }
                 }
@@ -1383,17 +1407,8 @@ export default definePlugin({
                     });
                     throw new Error(`${window.BotClientNative.getBotClientName()} cannot join guilds`);
                 } else {
-                    const res = await RestAPI.get({
-                        url: Constants.Endpoints.GUILD(guildId),
-                    }).catch(e => e);
-                    if (res.ok) {
-                        const shardId = Number(
-                            (BigInt(guildId) >> 22n) %
-                                BigInt(parseInt(originalSessionStorage.getItem("allShards") || "0")),
-                        );
-                        originalSessionStorage.setItem("currentShard", shardId.toString());
-                        await LoginToken.loginToken(GetToken.getToken());
-                        return NavigationRouter.transitionToGuild(guildId, channelId);
+                    if (await openGuildById(guildId, channelId) === "ok") {
+                        return;
                     } else {
                         Toasts.show({
                             message: `${window.BotClientNative.getBotClientName()} cannot join guilds`,

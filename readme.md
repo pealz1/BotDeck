@@ -156,7 +156,7 @@ Logging in works via the UI on first startup of the application.
 
 ## Features
 
-- **Sharding**
+- **Sharding**: `/switch shard <id>` logs in on another shard; `/switch guild <id>` opens a server by ID, reconnecting to its shard if it is not loaded
 - **View Guilds** _(Lazy load them)_
 - **Manage Guilds, Channels**
 - **Messages** (Send, View History, Embeds, Components (V2)[^7], Reactions, Manage, Create Poll)
