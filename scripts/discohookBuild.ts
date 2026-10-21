@@ -3,7 +3,7 @@
 import { spawn } from "child_process";
 import path from "path";
 import process from "process";
-import { existsSync, renameSync, rmSync, readFileSync, writeFileSync } from "fs";
+import { copyFileSync, existsSync, renameSync, rmSync, readFileSync, writeFileSync } from "fs";
 
 function runCommand(cmd: string, opts: { cwd?: string } = {}): Promise<void> {
     return new Promise((resolve, reject) => {
@@ -51,6 +51,8 @@ function copyDist() {
 
     const discohookBuildPath = path.resolve(root, "discohook", "dist");
     renameSync(discohookBuildPath, finalFolder);
+    // Discohook is AGPL-3.0: ship its license with the built editor.
+    copyFileSync(path.resolve(root, "discohook", "LICENSE.txt"), path.join(finalFolder, "LICENSE.txt"));
 
     console.info("Moved the newly built discohook folder to", finalFolder);
 }

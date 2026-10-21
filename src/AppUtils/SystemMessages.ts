@@ -69,7 +69,7 @@ Found a bug or have an idea? Open an issue on the [${Constants.AppName} tracker]
                     color: 16750296,
                     timestamp: "2022-11-29T16:56:00.000Z",
                     footer: {
-                        text: "Elysia",
+                        text: "Sponsors of DiscordBotClient by aiko-chan-ai",
                         icon_url:
                             "https://cdn.discordapp.com/avatars/1056491867375673424/93fb88f6b8c0a2a33c437d0fff4c6625.png",
                     },

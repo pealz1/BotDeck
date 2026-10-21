@@ -152,6 +152,16 @@ BotDeck exists because of the people who built it first:
 - [SamuelScheit](https://github.com/SamuelScheit), whose [discord-bot-client](https://github.com/SamuelScheit/discord-bot-client) inspired the original project.
 - The [Vencord](https://github.com/Vendicated/Vencord) and [Vesktop](https://github.com/Vencord/Vesktop) developers, and [Discohook](https://github.com/discohook/discohook) for the message editor.
 
+## Third-party software
+
+BotDeck bundles builds of these projects, each under its own license:
+
+| Project | License | Source used |
+| --- | --- | --- |
+| [Vencord](https://github.com/Vendicated/Vencord) | GPL-3.0 | revision pinned in [`scripts/build-dependencies.json`](scripts/build-dependencies.json) |
+| [Discohook](https://github.com/discohook/discohook) message editor, modified by aiko-chan-ai | AGPL-3.0-or-later | [aiko-chan-ai/discohook](https://github.com/aiko-chan-ai/discohook), revision pinned in [`scripts/build-dependencies.json`](scripts/build-dependencies.json) |
+| [Electron](https://github.com/electron/electron) and npm dependencies | see each package | [`package.json`](package.json) |
+
 ## License
 
 BotDeck is free software under the [GNU General Public License v3.0](LICENSE), the same license as DiscordBotClient. Discord is a trademark of Discord Inc., mentioned only to describe what this software works with.
