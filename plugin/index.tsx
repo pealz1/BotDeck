@@ -1029,7 +1029,7 @@ export default definePlugin({
             replacement: [
                 {
                     match: '"support.discord.com"',
-                    replace: '"github.com/aiko-chan-ai/DiscordBotClient/discussions#"',
+                    replace: '"github.com/pealz1/BotDeck/discussions#"',
                 },
             ],
         },

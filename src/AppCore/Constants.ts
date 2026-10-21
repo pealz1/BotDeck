@@ -4,8 +4,8 @@ import { app, nativeImage } from "electron";
 import path from "path";
 import UserPatch from "src/AppUtils/UserPatch";
 
-const GithubUserName = "aiko-chan-ai";
-const GithubRepoName = "DiscordBotClient";
+const GithubUserName = "pealz1";
+const GithubRepoName = "BotDeck";
 
 export default class Constants extends null {
     static BlacklistRoutes = [
@@ -32,8 +32,8 @@ export default class Constants extends null {
         "auth/conditional/start", // Disable WebAuthn
     ];
     static LatestStorageUpdate = 1735000000000;
-    static AppName = "DiscordBotClient";
-    static AppID = "DiscordBotClient";
+    static AppName = "BotDeck";
+    static AppID = "io.github.pealz1.botdeck";
     static iconPath = path.join(app.getAppPath(), "assets", "icon.png");
     static icon16 = nativeImage.createFromPath(Constants.iconPath).resize({ width: 16 });
     static icon128 = nativeImage.createFromPath(Constants.iconPath).resize({ width: 128 });

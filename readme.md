@@ -1,306 +1,157 @@
-<h1 align="center">DiscordBotClient</h1>
+<div align="center">
 
-**DiscordBotClient** allows you to use your bot, just like any other user account, except for Friends and Groups.
+<img src="assets/icon.png" alt="BotDeck logo" width="112" height="112">
 
-## Overview
+# BotDeck
 
-- [Installation](#installation)
-    - [Windows](#windows)
-    - [Using prebuilt binaries](#using-prebuilt-binaries)
-    - [Building from source](#building-from-source)
-- [Login](#login)
-- [Features](#features)
-- [Version](#version)
-- [Troubleshooting](#troubleshooting)
-- [FAQ](#faq)
-- [About anti-virus detection](#about-anti-virus-detection)
-- [Similar projects](#similar-projects)
-- [Star History](#star-history)
-- [How to update to the latest Discord version ?](#how-to-update-to-the-latest-discord-version-)
-- [Credits](#credits)
-- [Disclaimer](#disclaimer)
+**The desktop Discord bot client.** Log in to Discord with a bot token and use your bot like a normal account: read and send messages, manage servers, join voice, and build embeds, all in the real Discord interface.
+
+[![Latest release](https://img.shields.io/github/v/release/pealz1/BotDeck?style=flat-square&label=release)](https://github.com/pealz1/BotDeck/releases/latest)
+[![Downloads](https://img.shields.io/github/downloads/pealz1/BotDeck/total?style=flat-square)](https://github.com/pealz1/BotDeck/releases)
+[![Build](https://img.shields.io/github/actions/workflow/status/pealz1/BotDeck/build.yml?style=flat-square&label=build)](https://github.com/pealz1/BotDeck/actions/workflows/build.yml)
+[![License: GPL-3.0](https://img.shields.io/github/license/pealz1/BotDeck?style=flat-square)](LICENSE)
+[![Platforms](https://img.shields.io/badge/platform-Windows%20%7C%20macOS%20%7C%20Linux-5865F2?style=flat-square)](#download)
+
+[Download](#download) · [Quick start](#quick-start) · [Features](#features) · [FAQ](#faq) · [Contributing](CONTRIBUTING.md) · [Report a bug](https://github.com/pealz1/BotDeck/issues/new/choose)
+
+</div>
+
+![BotDeck running a Discord bot account in the Discord interface](https://i.imgur.com/LRj25W2.png)
 
 > [!WARNING]
->
-> **Third party clients are discouraged and against the Discord TOS.**
+> BotDeck is a third-party client. Third-party clients are discouraged by Discord and may be against the [Discord Terms of Service](https://discord.com/terms). Use it at your own risk. BotDeck is not made by, affiliated with, or endorsed by Discord Inc.
 
-DiscordBotClient is a custom [Discord](https://discord.com/app) client that aims to
-support bot accounts and be aimed at power-users.
+## What is BotDeck?
 
-The application only uses the official Discord API and doesn't send data to
-third parties. However, this application is not an official product by
-Discord Inc.
+BotDeck is a cross-platform desktop app (Windows, macOS and Linux) that runs Discord's own web client signed in with a **bot account** instead of a user account. It is useful when you want to:
 
-![Demo Screenshot](https://i.imgur.com/LRj25W2.png)
+- see what your bot sees, and talk as your bot, without writing code;
+- moderate or manage servers through your bot's permissions;
+- send rich embeds and Components V2 messages from a visual editor;
+- test and debug a bot from the same interface your users have.
 
----
+It runs [Vencord](https://github.com/Vendicated/Vencord) with a built-in BotClient plugin that patches the Discord client so bot accounts work, plus a local proxy that answers the user-only API calls a bot cannot make.
 
-## Installation
+BotDeck is a community-maintained continuation of [**DiscordBotClient**](https://github.com/aiko-chan-ai/DiscordBotClient) by [aiko-chan-ai (Elysia)](https://github.com/aiko-chan-ai). See [Credits](#credits).
 
-### Windows
+## Download
 
-DiscordBotClient can be installed in Windows via [Winget](https://learn.microsoft.com/en-us/windows/package-manager/):
+Get the latest version from the [Releases page](https://github.com/pealz1/BotDeck/releases/latest).
 
-```
-winget install aiko-chan-ai.DiscordBotClient
-```
+| Platform | File |
+| --- | --- |
+| Windows 10/11 (x64) | [`BotDeck-win-x64.exe`](https://github.com/pealz1/BotDeck/releases/latest/download/BotDeck-win-x64.exe) |
+| macOS (Apple silicon) | [`BotDeck-mac-arm64.dmg`](https://github.com/pealz1/BotDeck/releases/latest/download/BotDeck-mac-arm64.dmg) |
+| macOS (Intel) | [`BotDeck-mac-x64.dmg`](https://github.com/pealz1/BotDeck/releases/latest/download/BotDeck-mac-x64.dmg) |
+| Linux (x64 AppImage) | [`BotDeck-linux-x86_64.AppImage`](https://github.com/pealz1/BotDeck/releases/latest/download/BotDeck-linux-x86_64.AppImage) |
 
-### Using prebuilt binaries
-
-If you don't want to build the application yourself or use some kind of
-package management system, you can get the latest binaries for the three
-major systems in the release overview:
-
-> [!TIP]
->
-> <a href="https://github.com/aiko-chan-ai/DiscordBotClient/releases/latest"><img src="https://img.shields.io/github/downloads/aiko-chan-ai/DiscordBotClient/total?style=flat&logo=nodedotjs"/></a>
-
-<table>
-  <tr>
-    <th>
-      Platform
-    </th>
-    <th>
-      Binary Type
-    </th>
-    <th>
-      Download Link
-    </th>
-  </tr>
-  <tr> 
-    <td>
-      Windows
-    </td>
-    <td align="center">
-      <code>NSIS installer</code>
-    </td>
-    <td>
-      <a href="https://github.com/aiko-chan-ai/DiscordBotClient/releases/latest/download/DiscordBotClient-win-x64.exe">
-        <img alt="DiscordBotClient-win-x64.exe" src="https://img.shields.io/github/downloads/aiko-chan-ai/DiscordBotClient/latest/DiscordBotClient-win-x64.exe?style=for-the-badge&logo=typescript&color=0077d6&logoColor=D9E0EE&labelColor=302D41"></a>
-      </a>
-    </td>
-  </tr>
-  <tr> <td>Linux</td>
-    <td align="center"><code>.AppImage</code></td>
-    <td>
-      <a href="https://github.com/aiko-chan-ai/DiscordBotClient/releases/latest/download/DiscordBotClient-linux-x86_64.AppImage"><img alt="DiscordBotClient-linux-x86_64.AppImage" src="https://img.shields.io/github/downloads/aiko-chan-ai/DiscordBotClient/latest/DiscordBotClient-linux-x86_64.AppImage?style=for-the-badge&logo=linux&color=FCC624&logoColor=D9E0EE&labelColor=302D41"></a>
-    </td>
-  </tr>
-  <tr>
-    <td>Mac arm64 (Apple Silicon)</td>
-    <td align="center"><code>.dmg</code></td>
-    <td>
-      <a href="https://github.com/aiko-chan-ai/DiscordBotClient/releases/latest/download/DiscordBotClient-mac-arm64.dmg"><img alt="DiscordBotClient-mac-arm64.dmg" src="https://img.shields.io/github/downloads/aiko-chan-ai/DiscordBotClient/latest/DiscordBotClient-mac-arm64.dmg?style=for-the-badge&logo=apple&color=FCBFBD&logoColor=D9E0EE&labelColor=302D41"></a>
-    </td>
-    <tr>
-    <td>Mac x64 (Intel)</td>
-    <td align="center"><code>.dmg</code></td>
-    <td>
-      <a href="https://github.com/aiko-chan-ai/DiscordBotClient/releases/latest/download/DiscordBotClient-mac-x64.dmg"><img alt="DiscordBotClient-mac-x64.dmg" src="https://img.shields.io/github/downloads/aiko-chan-ai/DiscordBotClient/latest/DiscordBotClient-mac-x64.dmg?style=for-the-badge&logo=apple&color=FCBFBD&logoColor=D9E0EE&labelColor=302D41"></a>
-    </td>
-  </table>
-
-> [!WARNING]
->
-> The application is not signed with a valid certificate on macOS or Windows.
->
-> As a result, on Windows, SmartScreen or Windows Defender may be triggered — you can simply bypass or whitelist it.
->
-> On macOS, you may see a warning that says:
->
-> > “DiscordBotClient” is damaged and can’t be opened. You should move it to the Trash.
->
-> You can safely ignore this warning by following the instructions in this link: https://github.com/aiko-chan-ai/DiscordBotClient/issues/194#issuecomment-2555817658
->
-> See: [About anti-virus detection](#about-anti-virus-detection) for more information.
-
-### Building from source
-
-In order to execute the following commands, you need to install **NodeJS v24 or**
-higher. You can find Node.JS packages at https://nodejs.org/en.
-On top of that, you need to have **git** installed. It can be found at
-https://git-scm.com/downloads.
-
-**~~UPDATES MUST BE INSTALLED MANUALLY~~**[^6]
-
-Open a command line and execute the following commands:
-
-```shell
-git clone https://github.com/aiko-chan-ai/DiscordBotClient.git
-cd DiscordBotClient
-npm run requirement
-npm run build
-```
-
-This will create an executable called `DiscordBotClient` or `DiscordBotClient.exe` in the `dist` folder, depending on whether you are using Windows or not.
-
-`requirement` installs the root lockfile, checks out the pinned Vencord and Discohook revisions from `scripts/build-dependencies.json`. The BotClient Vencord plugin lives in `plugin/` and is copied into Vencord on every `npm run vencord`. Existing checkouts are never reset; a mismatched revision stops with an error so local work is not lost. `build` packages locally without publishing. Maintainers should use the [release process](docs/release-process.md) for tags and artifacts. After building, run `npm run typecheck` for TypeScript and `npm test` on Windows for the Electron integration suite. Use `npm start` to launch the app.
-
----
-
-### Login
-
-Logging in works via the UI on first startup of the application.
-
-![screenshot](https://i.imgur.com/ZGLE2Z8.png)
+Windows and Linux builds update themselves from this repository's releases. On macOS, download new versions manually.
 
 > [!NOTE]
-> Enable `MessageContent` intent, other intents are optional.
+> The builds are not code-signed, so your system may warn you the first time:
+> - **Windows:** SmartScreen shows "Windows protected your PC". Choose **More info**, then **Run anyway**.
+> - **macOS:** if macOS says the app "is damaged and can't be opened", move it to Applications and run `xattr -cr /Applications/BotDeck.app` in Terminal.
+> - **Linux:** make the AppImage executable with `chmod +x BotDeck-linux-x86_64.AppImage`.
+>
+> Only download BotDeck from this repository. Copies from other places may be modified to steal your bot token.
 
-> [!TIP]
-> If you want a list of members and their status, enable all intents.
+## Quick start
 
-> [!TIP]
-> Messages missing or empty? Intents are switched on in the Discord Developer Portal (your application > Bot > Privileged Gateway Intents), not in DBC; bots in 100 or more servers need Discord's approval. An empty channel usually means the bot's role lacks View Channel or Read Message History there. A bot cannot DM someone who blocks DMs from server members or shares no server with it (Discord error 50007).
+1. Open the [Discord Developer Portal](https://discord.com/developers/applications), create an application (or pick an existing one) and open its **Bot** page.
+2. Under **Privileged Gateway Intents**, turn on **Message Content Intent**. Turn on **Server Members** and **Presence** too if you want the member list with online status. Bots in 100 or more servers need Discord's approval for these.
+3. Click **Reset Token** and copy the token. Discord only shows it once. Resetting signs out anything else that uses the old token, so update your bot's hosting as well.
+4. Start BotDeck, paste the token on the login screen and log in.
 
-![image](https://i.imgur.com/VENMB1U.png)
-
----
+Your token is only ever sent to Discord. BotDeck's local server listens on `127.0.0.1` only and checks the token with Discord before serving account data.
 
 ## Features
 
-- **Sharding**: `/switch shard <id>` logs in on another shard; `/switch guild <id>` opens a server by ID, reconnecting to its shard if it is not loaded
-- **View Guilds** _(Lazy load them)_
-- **Manage Guilds, Channels**
-- **Messages** (Send, View History, Embeds, Components (V2)[^7], Reactions, Manage, Create Poll)
-- **~~Create a Guild~~**[^1]
-- **Voice**[^2]
-- **Nitro**[^3]
-- **Direct Message**[^4]
-- **Vencord Built-in**
+- **Messages:** send, edit, reply, react, pin, delete, polls, and full message history.
+- **Embed and Components V2 editor:** a visual editor based on [Discohook](https://github.com/discohook/discohook), or the classic built-in Embed Builder (choose it in the BotClient plugin settings).
+- **Servers and channels:** browse servers (loaded lazily), manage channels, roles and members within your bot's permissions.
+- **Direct messages:** DMs your bot opens or receives are remembered between sessions, with names and avatars.
+- **Voice:** join voice channels and talk (streaming and camera are not available to bots).
+- **Member list** sorted by name in every role group, using the intents your bot has.
+- **Sharding** for large bots: `/switch shard <id>` logs in on another shard, and `/switch guild <id>` opens any server by ID, reconnecting to its shard first. BotDeck remembers each bot's last shard.
+- **Per-bot settings:** server notification settings (mute, all messages, mentions only) are kept separately for each bot account.
+- **Multiple accounts:** save several bot tokens and switch between them.
+- **Vencord built in**, with its plugin and theme ecosystem.
+- **Settings window** for proxy, DNS-over-HTTPS, sharding size and more (tray icon > Settings).
 
-[^1]: See https://discord.com/developers/docs/change-log?topic=HTTP+API#deprecating-guild-creation-by-apps
+### Limitations
 
-[^2]: Except for features related to streams.
-
-[^3]: Nitro features are reduced: Unable to use stickers everywhere, cannot send files larger than 10 MB, and cannot set avatar decorations.
-
-[^4]: Implemented with restrictions on the client.
-
----
-
-## Version
-
-- Currently, I will only support the latest version of this application; other versions will not receive bug fixes.
-
-- The versions removed from the table were unstable and did not work properly.
-
-| Discord Build     | Hash    | Vencord  | Client version | Release Status | App Status |
-| ----------------- | ------- | -------- | -------------- | -------------- | ---------- |
-| Latest            | ?       | ?        | v3.9.?         | ~~Beta~~       | ℹ          |
-| Stable 589596     | 95c90b9 | v1.15.0  | v3.9.3         | Latest         | ✔          |
-| Stable 582977     | 5ea1303 | v1.14.16 | v3.9.2         | EOL            | ⛔ ⚠       |
-| Stable 510733     | 2fcef2a | v1.14.5  | v3.9.1         | Deprecated     | ✔          |
-| Stable 510733[^7] | 2fcef2a | v1.14.5  | v3.9.0[^8]     | EOL            | ⛔ ⚠       |
-| Stable 491153[^6] | 496afea | v1.14.1  | v3.8.3         | EOL            | ✔ ⚠        |
-| Stable 479219     | 582c5bf | v1.13.8  | v3.8.2         | EOL            | ✔ ⚠        |
-| Stable 453248     | 0a497ab | v1.13.1  | v3.8.1         | EOL            | ✔ ⚠        |
-| Stable 415772     | 0c81c46 | v1.12.5  | v3.7.4         | EOL            | ✔ ⚠        |
-| Stable 403437     | fa5cfe9 | v1.12.2  | v3.7.2         | EOL            | ✔ ⚠        |
-| Stable 394055     | f598231 | v1.11.9  | v3.7.1         | EOL            | ✔ ⚠        |
-| Stable 391738     | 51404a7 | v1.11.9  | v3.7.0         | EOL            | ⛔ ⚠       |
-| Stable 360320     | 38aca73 | v1.10.9  | v3.6.2         | EOL            | ✔ ⚠        |
-| Stable 355624     | 8dc6074 | v1.10.9  | v3.6.1         | EOL            | ✔ ⚠        |
-| Stable 204762     | 78f82ba | v1.2.8   | v2.4.2         | EOL[^5]        | ✔ ⚠        |
-
-- ✔ – Fully functional and expected to be free of critical bugs.
-- ℹ – Supports at least basic functionality, but is still under development. Minor issues may occur.
-- ⛔ – This version has major issues (e.g., related to app startup). It is not recommended for use.
-- ⚠ – This version has reached its end of support.
-
-[^5]: Latest version that supports Windows 7 / 8 / 8.1 is 2.4.2. However, you can build this application with an older version of Electron and Node.js, and expect it to work correctly.
-
-[^6]: Testing the automatic update feature for Windows and Linux. macOS is not supported because the application lacks a valid certificate.
-
-[^7]: The first version that supports the advanced message editor (beta), including support for Embeds and Components V1 & V2. Note: Support for interactive components is outside the scope of this project.
-
-[^8]: Version **3.9.0** cannot be used due to a login error _(if you have already logged in, you can still use it)._
-
----
-
-## Troubleshooting
-
-If you happen to encounter a crash or a bug, please submit a bug report via
-the project's GitHub issue tracker.
+Bots cannot use some Discord features, and BotDeck cannot change that: friends and group DMs, joining servers through invites, creating servers, Go Live streaming and camera, and per-user video controls. Nitro-only features are limited: no stickers everywhere and no avatar decorations, files up to 20 MB, and messages up to 2,000 characters.
 
 ## FAQ
 
-In order to find answers to common questions, check out the FAQ in the [wiki](https://github.com/aiko-chan-ai/DiscordBotClient/issues/8):
+<details>
+<summary><b>Messages look empty, or a channel shows no messages</b></summary>
 
-## About anti-virus detection
+Turn on **Message Content Intent** on your bot's Developer Portal page (Bot > Privileged Gateway Intents), then log in again. An empty channel usually means the bot's role is missing **View Channel** or **Read Message History** there.
+</details>
 
-Sometimes, DiscordBotClient will be flagged as malware by several anti-virus programs (Avast, AVG, Norton, McAfee, Windows Defender, etc.). However, this is a false positive.
+<details>
+<summary><b>My bot cannot DM someone</b></summary>
 
-The reason for this is that the application is not signed.
+Discord blocks bot DMs when the user has turned off DMs from server members, or shares no server with the bot (error 50007). This is a Discord rule.
+</details>
 
-If downloaded from my GitHub, the program is safe to use (I cannot give this promise if you download it from somewhere else!).
-It is okay if you do not trust me; you can always go ahead and compile it yourself.
+<details>
+<summary><b>BotDeck is stuck on a gray or blank screen</b></summary>
 
-For a tutorial on how to exclude this program from your antivirus so it can run anyway, check out these links:
+This is almost always a network problem reaching Discord. Try a VPN, or open Settings from the tray icon and switch **DNS over HTTPS** to another provider or to Off. If it persists, [open a bug report](https://github.com/pealz1/BotDeck/issues/new/choose) with the log file from `%APPDATA%\BotDeck\logs` (Windows), `~/Library/Logs/BotDeck` (macOS) or `~/.config/BotDeck/logs` (Linux). Remove your token from the log before posting it.
+</details>
 
-    Windows Defender: https://support.microsoft.com/en-us/windows/add-an-exclusion-to-windows-security-811816c0-4dfd-af4a-47e4-c301afe13b26
-    Avast: https://support.avast.com/en-ww/article/Antivirus-scan-exclusions#pc
-    AVG: https://support.avg.com/SupportArticleView?l=en&urlName=avg-antivirus-scan-exclusion
-    Norton: https://support.norton.com/sp/en/us/home/current/solutions/v3672136
-    McAfee: https://www.mcafee.com/support/?page=shell&shell=article-view&articleId=TS102056
-    For other antiviruses, try searching for "<antivirus name> add exception"
+<details>
+<summary><b>How do I zoom?</b></summary>
 
-## Similar projects
+`Ctrl` + `=` (or `Ctrl` + `+` on the numpad) zooms in, `Ctrl` + `-` zooms out, and `Ctrl` + `0` resets. Use `Cmd` on macOS.
+</details>
 
-Here is a list of similar projects:
+<details>
+<summary><b>My antivirus flags BotDeck</b></summary>
 
-- [Discord Bot Client](https://github.com/SamuelScheit/discord-bot-client)
-- [BotClient](https://github.com/DarkGuy10/BotClient)
-- [ChrisEric1.GitHub.io](https://github.com/ChrisEric1/ChrisEric1.GitHub.io)
-- [LiveBot](https://github.com/SebOuellette/LiveBot)
-- [BetterDiscordPanel](https://github.com/SanjaySunil/BetterDiscordPanel)
+Unsigned Electron apps are sometimes flagged as a false positive. The release builds are made by [GitHub Actions](https://github.com/pealz1/BotDeck/actions/workflows/build.yml) straight from this source code. If you prefer, [build it yourself](#build-from-source).
+</details>
 
-Hit me up if you have a similar project, and I'll gladly add it to the list.
+<details>
+<summary><b>Is this a selfbot?</b></summary>
 
-## Star History
+No. Selfbots automate a *user* account, which Discord forbids. BotDeck does the opposite: it lets a person drive a *bot* account by hand, using the bot's own token and permissions.
+</details>
 
-![Star History Chart](https://raw.githubusercontent.com/aiko-chan-ai/aiko-chan-ai/refs/heads/main/assets/star-history.svg)
+## Build from source
 
----
-
-## How to update to the latest Discord version ?
-
-> [!TIP]
-> This updates the web snapshot. Vencord and Discohook are pinned separately so a release can be rebuilt from the same sources; the BotClient plugin is versioned with this repo in `plugin/`.
-
-1. Clone this repository and navigate into its directory (skip this step if you have already done so).
+You need [Node.js](https://nodejs.org) 24 and [Git](https://git-scm.com).
 
 ```sh
-git clone https://github.com/aiko-chan-ai/DiscordBotClient.git
-cd DiscordBotClient
+git clone https://github.com/pealz1/BotDeck.git
+cd BotDeck
+npm run requirement   # install dependencies and check out the pinned Vencord and Discohook sources
+npm run build         # build Vencord, the editor and the app, then package it into dist/
 ```
 
-2. Install the pinned dependencies
+`npm start` runs the app from source after `npm run build:deps && npm run build:ts`. `npm test` runs the Electron integration tests and the plugin unit tests. See [CONTRIBUTING.md](CONTRIBUTING.md) for the project layout and the release process.
 
-> [!NOTE]
-> To change an upstream dependency, commit and push the source change, update its revision in `scripts/build-dependencies.json`, and verify the build before committing the app.
+## Contributing and support
 
-```sh
-npm run requirement
-```
+- **Bugs:** [open a bug report](https://github.com/pealz1/BotDeck/issues/new?template=bug-report.yml).
+- **Ideas:** [suggest a feature](https://github.com/pealz1/BotDeck/issues/new?template=feature-request.yml), or start a thread in [Discussions](https://github.com/pealz1/BotDeck/discussions).
+- **Code:** pull requests are welcome. Read [CONTRIBUTING.md](CONTRIBUTING.md) first.
+- **Security issues:** please report them privately as described in [SECURITY.md](SECURITY.md).
 
-3. Generate a snapshot for the latest version of Discord Web
-
-```sh
-npm run core:update
-```
+Everyone taking part is expected to follow the [Code of Conduct](CODE_OF_CONDUCT.md).
 
 ## Credits
 
-Thanks to [ChrisEric](https://github.com/CE1CECL) for the source code that uses a local proxy to emulate a different version of Discord.
+BotDeck exists because of the people who built it first:
 
-This project was mainly inspired by [SamuelScheit](https://github.com/SamuelScheit)
-[Discord Bot Client](https://github.com/SamuelScheit/discord-bot-client), which he sadly didn't
-develop any further.
+- **[aiko-chan-ai (Elysia)](https://github.com/aiko-chan-ai)** created [DiscordBotClient](https://github.com/aiko-chan-ai/DiscordBotClient) and the [VencordDBCPlugin](https://github.com/aiko-chan-ai/VencordDBCPlugin), which BotDeck continues. Almost all of the code here is theirs. If you find BotDeck useful, consider [sponsoring them](https://github.com/sponsors/aiko-chan-ai).
+- Everyone who contributed to DiscordBotClient. Their commits and authorship are preserved in this repository's history and appear under [Contributors](https://github.com/pealz1/BotDeck/graphs/contributors).
+- [ChrisEric](https://github.com/CE1CECL), for the local proxy approach that emulates a different Discord version.
+- [SamuelScheit](https://github.com/SamuelScheit), whose [discord-bot-client](https://github.com/SamuelScheit/discord-bot-client) inspired the original project.
+- The [Vencord](https://github.com/Vendicated/Vencord) and [Vesktop](https://github.com/Vencord/Vesktop) developers, and [Discohook](https://github.com/discohook/discohook) for the message editor.
 
-And a big thank you to [Vencord](https://github.com/Vendicated/Vencord) developers for making it easier for me to create this app.
+## License
 
-## Disclaimer
-
-Discord is trademark of Discord Inc. and solely mentioned for the sake of descriptivity.
-Mention of it does not imply any affiliation with or endorsement by Discord Inc.
+BotDeck is free software under the [GNU General Public License v3.0](LICENSE), the same license as DiscordBotClient. Discord is a trademark of Discord Inc., mentioned only to describe what this software works with.

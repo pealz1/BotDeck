@@ -549,7 +549,7 @@ export class DiscordBotClient extends EventEmitter {
             () => this.relaunch(),
             () => this.quit(),
         );
-        this.startupWindow.fail("Unable to start DiscordBotClient. Please try again.");
+        this.startupWindow.fail(`Unable to start ${Constants.AppName}. Please try again.`);
     }
     showNotification (options: NotificationConstructorOptions, callback?: () => unknown) {
         const notif = new Notification(options);

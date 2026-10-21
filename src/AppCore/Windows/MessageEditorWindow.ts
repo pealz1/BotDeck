@@ -58,7 +58,7 @@ export class MessageEditorWindow {
             modal: true,
             show: false,
             icon: Constants.icon128,
-            title: "DiscordBotClient — Message Editor",
+            title: `${Constants.AppName} — Message Editor`,
             autoHideMenuBar: true,
             webPreferences: {
                 session: editorSession,
@@ -94,7 +94,7 @@ export class MessageEditorWindow {
             if (this.window.isDestroyed()) return;
             dialog.showErrorBox(
                 "Message Editor could not open",
-                "The editor files are missing or could not load. Rebuild or reinstall DiscordBotClient.",
+                `The editor files are missing or could not load. Rebuild or reinstall ${Constants.AppName}.`,
             );
             this.window.destroy();
         });

@@ -19,7 +19,7 @@ export class StartupWindow {
             frame: false,
             show: false,
             backgroundColor: "#282b30",
-            title: "DiscordBotClient",
+            title: "BotDeck",
             autoHideMenuBar: true,
             webPreferences: {
                 preload: path.join(__dirname, "..", "Preloads", "StartupPreload.js"),
@@ -48,7 +48,7 @@ export class StartupWindow {
             if (this.window.isDestroyed()) return;
             dialog.showErrorBox(
                 "Startup failed",
-                "The startup screen could not be loaded. Please reinstall DiscordBotClient.",
+                "The startup screen could not be loaded. Please reinstall BotDeck.",
             );
             quit();
         });

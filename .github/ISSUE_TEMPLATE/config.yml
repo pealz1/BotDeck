@@ -1,5 +1,5 @@
-blank_issues_enabled: true
+blank_issues_enabled: false
 contact_links:
   - name: Report a security vulnerability privately
-    url: https://github.com/aiko-chan-ai/DiscordBotClient/security/advisories/new
+    url: https://github.com/pealz1/BotDeck/security/advisories/new
     about: Please do not post exploitable details or bot tokens in a public issue.

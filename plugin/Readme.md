@@ -1,18 +1,11 @@
-## Vencord Plugin for [DiscordBotClient](https://github.com/aiko-chan-ai/DiscordBotClient/)
+## BotClient plugin
 
-**Overview:**  
-This plugin enables logging in with a bot account.
+The Vencord plugin that lets the Discord web client log in with a **bot account**. It is part of [BotDeck](https://github.com/pealz1/BotDeck) and is based on [VencordDBCPlugin](https://github.com/aiko-chan-ai/VencordDBCPlugin) by aiko-chan-ai, whose history is kept in this folder.
 
-This repository includes the BotClient plugin and all necessary components.
+`npm run vencord` copies this folder into `Vencord/src/userplugins/botClient` and builds Vencord with it. Always edit the files here, not the copy.
 
-Install it in your Vencord repo under `src/userplugins/botClient/**/*`.
+### Updating for a new Discord build
 
-> **Instructions and Notes for Updating This Plugin to the Latest Version**
-
-1. **Review All Patch-Related Lines**  
-   Search for log lines like the following:  
-   ![img](https://i.imgur.com/ysLJWa1.png)  
-   Ensure that the patch code is still valid and correctly applied.
-
-2. **Test All Plugin Functionality**  
-   Verify the features listed here: [Issue #183](https://github.com/aiko-chan-ai/DiscordBotClient/issues/183)
+1. **Check every patch.** Vencord logs a warning for each patch that no longer matches. Each `find`/`match` must hit exactly once in Discord's current bundle.
+2. **Test the features** listed in [DiscordBotClient #183](https://github.com/aiko-chan-ai/DiscordBotClient/issues/183) with a test bot.
+3. **Run the checks:** `npm test` (includes `tests/plugin`) and `npx tsc --noEmit` inside `Vencord/`.

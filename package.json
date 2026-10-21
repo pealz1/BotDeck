@@ -1,14 +1,25 @@
 {
-  "name": "discord-bot-client",
-  "productName": "DiscordBotClient",
-  "version": "3.9.3",
-  "description": "DiscordBotClient - login into discord with a bot token",
+  "name": "botdeck",
+  "productName": "BotDeck",
+  "version": "1.0.0",
+  "description": "BotDeck: a desktop Discord bot client. Log in to Discord with a bot token and use your bot like a normal account.",
   "author": {
-    "name": "aiko-chan-ai",
-    "email": "aiko@shiroko.onmicrosoft.com"
+    "name": "pealz1",
+    "url": "https://github.com/pealz1"
+  },
+  "contributors": [
+    {
+      "name": "aiko-chan-ai (Elysia)",
+      "url": "https://github.com/aiko-chan-ai"
+    }
+  ],
+  "homepage": "https://github.com/pealz1/BotDeck#readme",
+  "bugs": {
+    "url": "https://github.com/pealz1/BotDeck/issues"
   },
   "repository": {
-    "url": "https://github.com/aiko-chan-ai/DiscordBotClient/"
+    "type": "git",
+    "url": "git+https://github.com/pealz1/BotDeck.git"
   },
   "license": "GPL-3.0",
   "main": "build/index.js",
@@ -35,7 +46,18 @@
     "requirement": "npm ci && tsx scripts/vencordClone.ts && tsx scripts/discohookClone.ts",
     "build:settings": "tsc -p tsconfig.renderer.json && vite build --config scripts/settingsVite.mts"
   },
-  "keywords": [],
+  "keywords": [
+    "discord",
+    "discord-bot",
+    "discord-bot-client",
+    "bot-token",
+    "bot-login",
+    "discord-client",
+    "electron",
+    "vencord",
+    "desktop-app",
+    "botdeck"
+  ],
   "devDependencies": {
     "@eslint/js": "^9.39.2",
     "@fluentui/react-components": "^9.74.9",
@@ -114,10 +136,10 @@
       "!plans",
       "!plugin"
     ],
-    "appId": "DiscordBotClient",
-    "productName": "DiscordBotClient",
+    "appId": "io.github.pealz1.botdeck",
+    "productName": "BotDeck",
     "artifactName": "${productName}-${os}-${arch}.${ext}",
-    "copyright": "Copyright © 2026 aiko-chan-ai",
+    "copyright": "Copyright © 2022-2026 aiko-chan-ai and contributors; BotDeck © 2026 pealz1",
     "mac": {
       "category": "public.app-category.social-networking",
       "target": [
@@ -147,11 +169,11 @@
       ],
       "desktop": {
         "entry": {
-          "Name": "DiscordBotClient",
+          "Name": "BotDeck",
           "GenericName": "Internet Messenger",
           "Type": "Application",
           "Categories": "Network;InstantMessaging;Chat;",
-          "Keywords": "discord;bot;vencord;electron;chat;"
+          "Keywords": "discord;bot;botdeck;vencord;electron;chat;"
         }
       },
       "category": "Network",
@@ -177,7 +199,7 @@
       {
         "provider": "github",
         "owner": "pealz1",
-        "repo": "DiscordBotClient"
+        "repo": "BotDeck"
       }
     ],
     "asar": false

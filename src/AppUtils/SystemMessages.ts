@@ -28,9 +28,9 @@ export async function GetSystemMessage () {
             embeds: [
                 {
                     type: "rich",
-                    title: "Make sure to download this application from the official GitHub!",
+                    title: `Only download ${Constants.AppName} from its GitHub releases`,
                     description:
-                        "### Downloading it from untrusted sources could pose a risk to your computer and expose your private data.",
+                        "### Copies from other sources may be modified to steal your bot token or harm your computer.",
                     color: 16750296,
                     author: {
                         name: "Important Notice",
@@ -45,20 +45,14 @@ export async function GetSystemMessage () {
                 },
                 {
                     type: "rich",
-                    description: `Thank you for choosing my application!
-What started as a small pet project has grown into something much bigger, and I’ve kept it going because of how much people enjoy it. <:TeriSmile:1048682023839088640> 
-Honestly, I’m not kidding — I’ve never had this many users before! <:scream:1262449431232647300>
+                    description: `**${Constants.AppName}** is a community-maintained continuation of **DiscordBotClient**, created by **aiko-chan-ai (Elysia)**. Almost everything you see here is their work. <:ElysiaHeart:1190332148868186253>
 
-If you like it, feel free to leave a star on my [repo](https://github.com/aiko-chan-ai/DiscordBotClient).
-Or, if you’d like, you can support me with a coffee on GitHub <:ElysiaHeart:1190332148868186253> — it really motivates me to keep working on this project! <:nyan:1262449421132759152>                 
+If you enjoy it, please star the [original project](https://github.com/aiko-chan-ai/DiscordBotClient) and consider [sponsoring its author](https://github.com/sponsors/aiko-chan-ai).
 
-<:MarchYey:1065630282394378390> A special thanks to everyone who has sponsored me on GitHub—your support means the world!
-
-Warm regards, 
-<:Discord:984744331200053269> yuneko.dev - <:github:889092230063734795> aiko-chan-ai`,
+Found a bug or have an idea? Open an issue on the [${Constants.AppName} tracker](https://github.com/${Constants.GithubRepo}/issues).`,
                     color: 16750296,
                     author: {
-                        name: "Thank you!",
+                        name: `About ${Constants.AppName}`,
                         icon_url: "https://cdn.discordapp.com/emojis/882480441075040257.png",
                         proxy_icon_url: "https://cdn.discordapp.com/emojis/882480441075040257.png",
                     },
@@ -96,17 +90,23 @@ Warm regards,
                         {
                             type: 2,
                             style: 5,
-                            label: "Repository",
+                            label: Constants.AppName,
                             emoji: {
                                 name: "github",
                                 id: "889092230063734795",
                             },
+                            url: `https://github.com/${Constants.GithubRepo}`,
+                        },
+                        {
+                            type: 2,
+                            style: 5,
+                            label: "Original project",
                             url: "https://github.com/aiko-chan-ai/DiscordBotClient",
                         },
                         {
                             type: 2,
                             style: 5,
-                            label: "Sponsor",
+                            label: "Sponsor Elysia",
                             emoji: {
                                 name: "Kanna_Heart",
                                 id: "882480441075040257",
@@ -116,12 +116,12 @@ Warm regards,
                         {
                             type: 2,
                             style: 5,
-                            label: "Bugs Report",
+                            label: "Report a bug",
                             emoji: {
                                 name: "BugHunter_lvl1",
                                 id: "873790531887579187",
                             },
-                            url: "https://github.com/aiko-chan-ai/DiscordBotClient/issues",
+                            url: `https://github.com/${Constants.GithubRepo}/issues`,
                         },
                     ],
                 },

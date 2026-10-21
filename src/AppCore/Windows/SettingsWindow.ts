@@ -18,7 +18,7 @@ export class SettingsWindow {
             minWidth: 720,
             minHeight: 480,
             show: false,
-            title: "DiscordBotClient — Settings",
+            title: "BotDeck — Settings",
             backgroundColor: "#202020",
             autoHideMenuBar: true,
             icon: path.join(app.getAppPath(), "assets", "icon.png"),
@@ -72,7 +72,7 @@ export class SettingsWindow {
             if (this.window.isDestroyed()) return;
             dialog.showErrorBox(
                 "Settings could not open",
-                "The local Settings interface is missing or could not load. Rebuild or reinstall DiscordBotClient.",
+                "The local Settings interface is missing or could not load. Rebuild or reinstall BotDeck.",
             );
             this.window.destroy();
         });

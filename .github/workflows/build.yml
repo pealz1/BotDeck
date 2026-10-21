@@ -80,7 +80,7 @@ jobs:
       - name: Upload build artifacts
         uses: actions/upload-artifact@v6
         with:
-          name: dbc-${{ runner.os }}
+          name: botdeck-${{ runner.os }}
           retention-days: 7
           if-no-files-found: error
           path: |
@@ -100,12 +100,13 @@ jobs:
     steps:
       - uses: actions/download-artifact@v4
         with:
-          pattern: dbc-*
+          pattern: botdeck-*
           merge-multiple: true
           path: release
       - name: Create draft release after every platform succeeds
         env:
           GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
         shell: bash
         run: |
           if gh release view "$GITHUB_REF_NAME" > /dev/null 2>&1; then

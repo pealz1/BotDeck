@@ -1,5 +1,5 @@
 name: Feature request
-description: Suggest an improvement to DBC
+description: Suggest an improvement to BotDeck
 title: "[Feature] "
 body:
   - type: textarea
@@ -13,7 +13,7 @@ body:
     id: proposal
     attributes:
       label: Proposed behavior
-      description: Describe how DBC should behave from the user's point of view.
+      description: Describe how BotDeck should behave from the user's point of view.
     validations:
       required: true
   - type: dropdown
