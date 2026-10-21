@@ -78,7 +78,7 @@ jobs:
           esac
           compgen -G "dist/$pattern" > /dev/null
       - name: Upload build artifacts
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         with:
           name: botdeck-${{ runner.os }}
           retention-days: 7
